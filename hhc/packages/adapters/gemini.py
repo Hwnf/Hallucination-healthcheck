@@ -6,11 +6,14 @@ Handles API authentication, request formatting, structured JSON response
 parsing, error handling, and retry logic.
 
 Usage:
-    adapter = GeminiAdapter(api_key="your-key-here")
+    adapter = GeminiAdapter(api_key=os.environ["HHC_GEMINI_API_KEY"])
     result = await adapter.call(semantic_call_input)
 
 Or configure via environment variable:
-    export HHC_GEMINI_API_KEY="your-key-here"
+    export HHC_GEMINI_API_KEY="your-gemini-api-key"
+
+Or point to a key file:
+    export HHC_GEMINI_KEY_FILE="/path/to/key/file"
 
 Model assignments (V3.1 Section 10):
     Call A (claim extraction):          gemini-3.1-flash-lite  thinking: minimal
@@ -55,15 +58,19 @@ class GeminiConfig:
         key = os.environ.get("HHC_GEMINI_API_KEY")
 
         if not key:
-            secret_path = "/root/.hhc_secrets/gemini_key"
-            try:
-                with open(secret_path, "r") as f:
-                    key = f.read().strip()
-            except FileNotFoundError:
-                key = None
+            secret_path = os.environ.get("HHC_GEMINI_KEY_FILE", "")
+            if secret_path:
+                try:
+                    with open(secret_path, "r") as f:
+                        key = f.read().strip()
+                except FileNotFoundError:
+                    key = None
 
         if not key:
-            raise RuntimeError("Gemini API key not found in environment or secure file.")
+            raise RuntimeError(
+                "Gemini API key not found. Set HHC_GEMINI_API_KEY environment variable, "
+                "or set HHC_GEMINI_KEY_FILE to the path of a file containing the key."
+            )
 
         return cls(
             api_key=key,
