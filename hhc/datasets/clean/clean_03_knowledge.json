@@ -1,0 +1,23 @@
+{
+  "trace_id": "clean_03",
+  "trace_schema_version": "1.0.0",
+  "user_request": "Explain the Pythagorean theorem",
+  "messages": [
+    {
+      "turn_index": 0,
+      "role": "user",
+      "content": "Explain the Pythagorean theorem"
+    },
+    {
+      "turn_index": 1,
+      "role": "assistant",
+      "content": "The Pythagorean theorem states that in a right triangle, the square of the hypotenuse equals the sum of the squares of the other two sides: a\u00b2 + b\u00b2 = c\u00b2."
+    }
+  ],
+  "context_blocks": [],
+  "artifacts": [],
+  "ground_truth": {
+    "is_clean": true,
+    "findings": []
+  }
+}

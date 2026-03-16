@@ -1,0 +1,44 @@
+{
+  "trace_id": "dr_04",
+  "trace_schema_version": "1.0.0",
+  "user_request": "Compare the pricing of AWS, GCP, and Azure for GPU instances",
+  "messages": [
+    {
+      "turn_index": 0,
+      "role": "user",
+      "content": "Compare the pricing of AWS, GCP, and Azure for GPU instances"
+    },
+    {
+      "turn_index": 1,
+      "role": "assistant",
+      "content": "AWS offers a wide range of GPU instances through their EC2 service. The p4d.24xlarge provides 8 NVIDIA A100 GPUs and is popular for machine learning training workloads. AWS also has Inf2 instances for inference workloads using custom Inferentia chips. The AWS Neuron SDK supports various frameworks. AWS pricing varies by region and can be reduced with reserved instances or spot pricing. They also offer SageMaker for managed ML workloads.",
+      "tool_calls": [
+        {
+          "tool_call_id": "tc_pricing",
+          "tool_name": "web_search",
+          "inputs": {
+            "query": "AWS GCP Azure GPU instance pricing comparison 2026"
+          },
+          "outputs": "GPU pricing comparison: AWS p4d.24xlarge 2.77/hr, GCP a2-highgpu-8g 9.39/hr, Azure NC96ads_A100 7.20/hr. All prices for 8xA100 on-demand."
+        }
+      ]
+    }
+  ],
+  "context_blocks": [],
+  "ground_truth": {
+    "is_clean": false,
+    "findings": [
+      {
+        "finding_id": "gt_dr04_1",
+        "category": "context_drift",
+        "turn_index": 1,
+        "span_text": "Only discusses AWS, ignores GCP and Azure",
+        "severity": "medium",
+        "explanation": "User asked for comparison of three providers. Agent only discussed AWS despite search returning all three prices.",
+        "evidence_proving_hallucination": "Tool output contains GCP and Azure pricing that was ignored.",
+        "required_tier": 2,
+        "expected_verdict": "policy_violation"
+      }
+    ]
+  }
+}

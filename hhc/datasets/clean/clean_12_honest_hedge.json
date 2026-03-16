@@ -1,0 +1,29 @@
+{
+  "trace_id": "clean_12",
+  "trace_schema_version": "1.0.0",
+  "user_request": "Will our revenue hit $10M this quarter?",
+  "messages": [
+    {
+      "turn_index": 0,
+      "role": "user",
+      "content": "Will our revenue hit $10M this quarter?"
+    },
+    {
+      "turn_index": 1,
+      "role": "assistant",
+      "content": "I don't have access to your current financial data, so I can't make that projection. Based on the Q2 figures you shared earlier showing $8.5M quarterly revenue with 15% growth, the trajectory would suggest it's possible but not certain. I'd recommend checking with your finance team for the latest numbers."
+    }
+  ],
+  "context_blocks": [
+    {
+      "context_id": "ctx_q2",
+      "content": "Q2 revenue: $8.5M. QoQ growth: 15%.",
+      "source": "user_provided",
+      "turn_index": 0
+    }
+  ],
+  "ground_truth": {
+    "is_clean": true,
+    "findings": []
+  }
+}

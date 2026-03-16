@@ -1,0 +1,22 @@
+{
+  "trace_id": "clean_16",
+  "trace_schema_version": "1.0.0",
+  "user_request": "Thanks for your help today",
+  "messages": [
+    {
+      "turn_index": 0,
+      "role": "user",
+      "content": "Thanks for your help today"
+    },
+    {
+      "turn_index": 1,
+      "role": "assistant",
+      "content": "You are welcome. Let me know if you need anything else."
+    }
+  ],
+  "context_blocks": [],
+  "ground_truth": {
+    "is_clean": true,
+    "findings": []
+  }
+}

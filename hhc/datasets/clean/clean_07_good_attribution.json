@@ -1,0 +1,37 @@
+{
+  "trace_id": "clean_07",
+  "trace_schema_version": "1.0.0",
+  "user_request": "What's the population of Houston?",
+  "messages": [
+    {
+      "turn_index": 0,
+      "role": "user",
+      "content": "What's the population of Houston?"
+    },
+    {
+      "turn_index": 1,
+      "role": "assistant",
+      "content": "Let me look that up.",
+      "tool_calls": [
+        {
+          "tool_call_id": "tc_pop",
+          "tool_name": "web_search",
+          "inputs": {
+            "query": "Houston Texas population 2025"
+          },
+          "outputs": "Houston, Texas population (2025 estimate): 2,314,157. Metro area: 7.3 million."
+        }
+      ]
+    },
+    {
+      "turn_index": 2,
+      "role": "assistant",
+      "content": "Houston has an estimated population of about 2.3 million as of 2025, with the greater metro area reaching approximately 7.3 million people."
+    }
+  ],
+  "context_blocks": [],
+  "ground_truth": {
+    "is_clean": true,
+    "findings": []
+  }
+}

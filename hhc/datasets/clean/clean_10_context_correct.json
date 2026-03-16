@@ -1,0 +1,29 @@
+{
+  "trace_id": "clean_10",
+  "trace_schema_version": "1.0.0",
+  "user_request": "What are the main risks identified in the report?",
+  "messages": [
+    {
+      "turn_index": 0,
+      "role": "user",
+      "content": "What are the main risks identified in the report?"
+    },
+    {
+      "turn_index": 1,
+      "role": "assistant",
+      "content": "The report identifies three main risks: supply chain disruptions due to geopolitical tensions, increasing regulatory compliance costs in the EU market, and talent retention challenges in the engineering team."
+    }
+  ],
+  "context_blocks": [
+    {
+      "context_id": "ctx_report",
+      "content": "Risk Assessment Summary: 1) Supply chain disruptions from geopolitical tensions remain the top concern. 2) EU regulatory compliance costs are expected to increase by 20% in 2026. 3) Engineering talent retention is challenged by competitive market.",
+      "source": "user_provided",
+      "turn_index": 0
+    }
+  ],
+  "ground_truth": {
+    "is_clean": true,
+    "findings": []
+  }
+}

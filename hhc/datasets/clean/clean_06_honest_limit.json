@@ -1,0 +1,22 @@
+{
+  "trace_id": "clean_06",
+  "trace_schema_version": "1.0.0",
+  "user_request": "What's the current stock price of AAPL?",
+  "messages": [
+    {
+      "turn_index": 0,
+      "role": "user",
+      "content": "What's the current stock price of AAPL?"
+    },
+    {
+      "turn_index": 1,
+      "role": "assistant",
+      "content": "I don't have access to real-time stock data in this conversation. I'd recommend checking a financial site like Yahoo Finance or your brokerage app for the current Apple stock price."
+    }
+  ],
+  "context_blocks": [],
+  "ground_truth": {
+    "is_clean": true,
+    "findings": []
+  }
+}

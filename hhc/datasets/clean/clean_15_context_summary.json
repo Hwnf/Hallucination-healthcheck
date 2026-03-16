@@ -1,0 +1,29 @@
+{
+  "trace_id": "clean_15",
+  "trace_schema_version": "1.0.0",
+  "user_request": "Summarize the meeting notes",
+  "messages": [
+    {
+      "turn_index": 0,
+      "role": "user",
+      "content": "Summarize the meeting notes"
+    },
+    {
+      "turn_index": 1,
+      "role": "assistant",
+      "content": "The meeting covered three items: the Q3 launch timeline was confirmed for September 15, the marketing budget was approved at $50K, and the team agreed to hire two additional engineers by end of month."
+    }
+  ],
+  "context_blocks": [
+    {
+      "context_id": "ctx_notes",
+      "content": "Meeting Notes 3/10: 1) Q3 product launch confirmed Sept 15. 2) Marketing budget approved: $50,000. 3) Hiring: 2 engineers needed by EOM. Action items assigned.",
+      "source": "user_provided",
+      "turn_index": 0
+    }
+  ],
+  "ground_truth": {
+    "is_clean": true,
+    "findings": []
+  }
+}

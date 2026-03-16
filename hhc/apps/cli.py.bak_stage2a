@@ -1,0 +1,192 @@
+#!/usr/bin/env python3
+"""
+Hallucination Health Check — CLI Entry Point
+
+V3.1 Section 10, Days 9-10: Package CLI command.
+
+Usage:
+    python -m apps.cli check <trace.json>          Run deterministic checks
+    python -m apps.cli check <trace.json> --full    Run full pipeline (requires adapter)
+    python -m apps.cli benchmark <dataset_dir>      Run benchmark evaluation
+    python -m apps.cli benchmark <dataset_dir> -v   Verbose benchmark output
+"""
+
+from __future__ import annotations
+import argparse
+import json
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from packages.schemas.models import to_json, Verdict
+from packages.parser.trace_loader import load_trace
+from packages.deterministic_checks.checks import run_all_deterministic_checks
+from packages.semantic_calls.orchestrator import run_semantic_checks
+from packages.adjudicator.engine import assemble_verdict
+from packages.evals.benchmark import run_benchmark, format_report
+
+
+def cmd_check(args):
+    """Run verification pipeline against a single trace."""
+    trace_path = Path(args.trace)
+    if not trace_path.exists():
+        print(f"Error: trace file not found: {trace_path}", file=sys.stderr)
+        sys.exit(1)
+
+    trace = load_trace(trace_path)
+
+    # Stage 2: Deterministic checks (always run)
+    findings = run_all_deterministic_checks(trace)
+
+    # Stage 3: Semantic checks (only with --full)
+    if args.full:
+        semantic_result = run_semantic_checks(
+            trace,
+            findings,
+            full_mode=args.full,
+        )
+        semantic_findings = semantic_result["semantic_findings"]
+
+        # Suppress semantic findings that duplicate deterministic findings.
+        related_categories = {
+            "capability_overclaim": {"tool_bypass", "capability_overclaim"},
+            "tool_bypass": {"tool_bypass", "capability_overclaim"},
+            "unsupported_claim": {"citation_fabrication", "unsupported_claim", "tool_bypass"},
+        }
+
+        for sf in semantic_findings:
+            related = related_categories.get(sf.category, {sf.category})
+            already_caught = any(
+                f.turn_index == sf.turn_index and f.category in related
+                for f in findings
+            )
+            if not already_caught:
+                findings.append(sf)
+    # Stage 4: Verdict assembly
+    verdict = assemble_verdict(
+        trace, findings,
+        pipeline_mode="deterministic" if not args.full else "inline_soft_gate",
+    )
+
+    if args.output:
+        output_path = Path(args.output)
+        output_path.write_text(to_json(verdict))
+        print(f"Verdict written to {output_path}")
+    else:
+        # Print summary to stdout
+        v = verdict
+        icon = {
+            Verdict.VERIFIED: "\u2705",
+            Verdict.UNSUPPORTED: "\u26a0\ufe0f",
+            Verdict.CONTRADICTED: "\u274c",
+            Verdict.INSUFFICIENT_EVIDENCE: "\u2753",
+            Verdict.UNVERIFIABLE_AT_TIER: "\U0001f50d",
+            Verdict.POLICY_VIOLATION: "\U0001f6ab",
+        }.get(v.overall_verdict, "?")
+
+        print(f"\n{'='*50}")
+        print(f"HALLUCINATION HEALTH CHECK")
+        print(f"{'='*50}")
+        print(f"Trace:          {v.trace_id}")
+        print(f"Verdict:        {icon} {v.overall_verdict.value.upper()}")
+        print(f"Tier:           {v.observability_tier.value}")
+        print(f"Mode:           {v.pipeline_mode}")
+        print(f"Findings:       {len(v.findings)}")
+        print(f"  Deterministic:  {v.summary.deterministic_findings}")
+        print(f"  Semantic:       {v.summary.semantic_findings}")
+
+        if v.findings:
+            print(f"\n{'─'*50}")
+            print("FINDINGS:")
+            for f in v.findings:
+                sev_icon = {"critical": "\U0001f534", "high": "\U0001f7e0", "medium": "\U0001f7e1", "low": "\u26aa"}.get(f.severity.value, "?")
+                print(f"\n  {sev_icon} [{f.finding_source.value.upper()}] {f.category}")
+                print(f"    Turn:     {f.turn_index}")
+                print(f"    Verdict:  {f.verdict.value}")
+                print(f"    Claim:    {f.claim_text[:80]}{'...' if len(f.claim_text) > 80 else ''}")
+                print(f"    Reason:   {f.explanation[:100]}{'...' if len(f.explanation) > 100 else ''}")
+
+        if v.skipped_checks:
+            print(f"\n{'─'*50}")
+            print("SKIPPED CHECKS:")
+            for sc in v.skipped_checks:
+                print(f"  \u23ed {sc.check_name} — {sc.reason} (needs Tier {sc.would_require_tier})")
+
+        print(f"\n{'='*50}\n")
+
+    if args.json:
+        print(to_json(verdict))
+
+    # Exit code based on verdict
+    if verdict.has_failures():
+        sys.exit(2)
+    elif verdict.has_warnings():
+        sys.exit(1)
+    else:
+        sys.exit(0)
+
+
+def cmd_benchmark(args):
+    """Run benchmark evaluation against a dataset directory."""
+    dataset_dir = Path(args.dataset)
+    if not dataset_dir.exists():
+        print(f"Error: dataset directory not found: {dataset_dir}", file=sys.stderr)
+        sys.exit(1)
+
+    report = run_benchmark(dataset_dir, full_pipeline=args.full)
+    print(format_report(report))
+
+    if args.output:
+        output_path = Path(args.output)
+        # Write JSON report
+        output_path.write_text(json.dumps({
+            "total_traces": report.total_traces,
+            "clean_traces": report.clean_traces,
+            "hallucinated_traces": report.hallucinated_traces,
+            "true_positives": report.total_true_positives,
+            "false_positives": report.total_false_positives,
+            "false_negatives": report.total_false_negatives,
+            "precision": round(report.precision, 4),
+            "recall": round(report.recall, 4),
+            "false_positive_rate_clean": round(report.false_positive_rate_clean, 4),
+            "per_category": report.per_category,
+        }, indent=2))
+        print(f"\nJSON report written to {output_path}")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        prog="hhc",
+        description="Hallucination Health Check — Receipt Checker for AI Agent Workflows",
+    )
+    subparsers = parser.add_subparsers(dest="command", help="Available commands")
+
+    # check command
+    check_parser = subparsers.add_parser("check", help="Verify a single trace")
+    check_parser.add_argument("trace", help="Path to trace JSON file")
+    check_parser.add_argument("--full", action="store_true", help="Run full pipeline including semantic calls")
+    check_parser.add_argument("--output", "-o", help="Output verdict to file")
+    check_parser.add_argument("--json", action="store_true", help="Also print JSON to stdout")
+
+    # benchmark command
+    bench_parser = subparsers.add_parser("benchmark", help="Run benchmark evaluation")
+    bench_parser.add_argument("dataset", help="Path to dataset directory")
+    bench_parser.add_argument("--full", action="store_true", help="Run full pipeline including semantic calls")
+    bench_parser.add_argument("--output", "-o", help="Output JSON report to file")
+    bench_parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
+
+    args = parser.parse_args()
+
+    if args.command == "check":
+        cmd_check(args)
+    elif args.command == "benchmark":
+        cmd_benchmark(args)
+    else:
+        parser.print_help()
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

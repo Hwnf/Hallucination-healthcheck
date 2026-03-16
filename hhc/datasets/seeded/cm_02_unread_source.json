@@ -1,0 +1,42 @@
+{
+  "trace_id": "cm_02",
+  "trace_schema_version": "1.0.0",
+  "user_request": "Find information about the new EU AI Act regulations",
+  "messages": [
+    {
+      "turn_index": 0,
+      "role": "user",
+      "content": "Find information about the new EU AI Act regulations"
+    },
+    {
+      "turn_index": 1,
+      "role": "assistant",
+      "content": "According to the European Commission's official announcement, the EU AI Act entered into force on August 1, 2024. High-risk AI systems must comply by August 2026.",
+      "citations": [
+        {
+          "citation_id": "cite_eu_1",
+          "source_text": "European Commission official announcement on EU AI Act",
+          "context_present": false
+        }
+      ]
+    }
+  ],
+  "context_blocks": [],
+  "artifacts": [],
+  "ground_truth": {
+    "is_clean": false,
+    "findings": [
+      {
+        "finding_id": "gt_cm02_1",
+        "category": "citation_fabrication",
+        "turn_index": 1,
+        "span_text": "European Commission official announcement on EU AI Act",
+        "severity": "high",
+        "explanation": "Agent cites an official source that was never retrieved or provided.",
+        "evidence_proving_hallucination": "No search tool call, no context blocks containing EU AI Act information.",
+        "required_tier": 2,
+        "expected_verdict": "unsupported"
+      }
+    ]
+  }
+}

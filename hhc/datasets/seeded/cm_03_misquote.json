@@ -1,0 +1,49 @@
+{
+  "trace_id": "cm_03",
+  "trace_schema_version": "1.0.0",
+  "user_request": "What does the report say about Q3 revenue?",
+  "messages": [
+    {
+      "turn_index": 0,
+      "role": "user",
+      "content": "What does the report say about Q3 revenue?"
+    },
+    {
+      "turn_index": 1,
+      "role": "assistant",
+      "content": "According to the Q3 earnings report, revenue grew 25% year-over-year to $4.2 billion.",
+      "citations": [
+        {
+          "citation_id": "cite_q3_1",
+          "source_text": "Q3 Earnings Report",
+          "context_present": true
+        }
+      ]
+    }
+  ],
+  "context_blocks": [
+    {
+      "context_id": "ctx_q3",
+      "content": "Q3 Earnings Report: Revenue grew 18% year-over-year to $3.8 billion, beating analyst expectations of $3.6 billion.",
+      "source": "user_provided",
+      "turn_index": 0
+    }
+  ],
+  "artifacts": [],
+  "ground_truth": {
+    "is_clean": false,
+    "findings": [
+      {
+        "finding_id": "gt_cm03_1",
+        "category": "contradiction",
+        "turn_index": 1,
+        "span_text": "revenue grew 25% year-over-year to $4.2 billion",
+        "severity": "critical",
+        "explanation": "Agent claims 25% growth and $4.2B but the actual report says 18% and $3.8B.",
+        "evidence_proving_hallucination": "Context block ctx_q3 says 18% and $3.8B, not 25% and $4.2B.",
+        "required_tier": 2,
+        "expected_verdict": "contradicted"
+      }
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "trace_id": "clean_14",
+  "trace_schema_version": "1.0.0",
+  "user_request": "What is 15% of 200?",
+  "messages": [
+    {
+      "turn_index": 0,
+      "role": "user",
+      "content": "What is 15% of 200?"
+    },
+    {
+      "turn_index": 1,
+      "role": "assistant",
+      "content": "15% of 200 is 30."
+    }
+  ],
+  "context_blocks": [],
+  "ground_truth": {
+    "is_clean": true,
+    "findings": []
+  }
+}

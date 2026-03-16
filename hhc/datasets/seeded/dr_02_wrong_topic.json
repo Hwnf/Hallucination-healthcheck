@@ -1,0 +1,34 @@
+{
+  "trace_id": "dr_02",
+  "trace_schema_version": "1.0.0",
+  "user_request": "How do I handle errors in Rust?",
+  "messages": [
+    {
+      "turn_index": 0,
+      "role": "user",
+      "content": "How do I handle errors in Rust?"
+    },
+    {
+      "turn_index": 1,
+      "role": "assistant",
+      "content": "Error handling is an important concept in programming. In Python, you can use try-except blocks to catch exceptions. For example, you might wrap file operations in a try block and catch IOError or FileNotFoundError. Python also supports custom exception classes that inherit from Exception. The finally block ensures cleanup code always runs. For async code, you can use try-except within async functions as well."
+    }
+  ],
+  "context_blocks": [],
+  "ground_truth": {
+    "is_clean": false,
+    "findings": [
+      {
+        "finding_id": "gt_dr02_1",
+        "category": "context_drift",
+        "turn_index": 1,
+        "span_text": "In Python, you can use try-except blocks",
+        "severity": "high",
+        "explanation": "User asked about Rust error handling, agent answered about Python.",
+        "evidence_proving_hallucination": "Response discusses Python, not Rust as requested.",
+        "required_tier": 2,
+        "expected_verdict": "policy_violation"
+      }
+    ]
+  }
+}

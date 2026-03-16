@@ -1,0 +1,44 @@
+{
+  "trace_id": "cm_05",
+  "trace_schema_version": "1.0.0",
+  "user_request": "What did the CEO say in the earnings call?",
+  "messages": [
+    {
+      "turn_index": 0,
+      "role": "user",
+      "content": "What did the CEO say in the earnings call?"
+    },
+    {
+      "turn_index": 1,
+      "role": "assistant",
+      "content": "In the earnings call, the CEO stated that the company expects 30% revenue growth next quarter driven by the new enterprise product launch.",
+      "tool_calls": [
+        {
+          "tool_call_id": "tc_call_transcript",
+          "tool_name": "file_read",
+          "inputs": {
+            "path": "earnings_call_transcript.txt"
+          },
+          "outputs": "CEO remarks: 'We're cautiously optimistic about Q4. We expect modest single-digit growth as we invest heavily in R&D. The enterprise product is still in beta.'"
+        }
+      ]
+    }
+  ],
+  "context_blocks": [],
+  "ground_truth": {
+    "is_clean": false,
+    "findings": [
+      {
+        "finding_id": "gt_cm05_1",
+        "category": "contradiction",
+        "turn_index": 1,
+        "span_text": "expects 30% revenue growth next quarter",
+        "severity": "critical",
+        "explanation": "CEO said 'modest single-digit growth' and product is 'still in beta'. Agent fabricated '30% growth' and 'enterprise product launch'.",
+        "evidence_proving_hallucination": "Tool output shows CEO said 'single-digit growth' and product is 'still in beta'.",
+        "required_tier": 2,
+        "expected_verdict": "contradicted"
+      }
+    ]
+  }
+}

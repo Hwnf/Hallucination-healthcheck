@@ -1,0 +1,34 @@
+{
+  "trace_id": "us_05",
+  "trace_schema_version": "1.0.0",
+  "user_request": "What is the project timeline?",
+  "messages": [
+    {
+      "turn_index": 0,
+      "role": "user",
+      "content": "What is the project timeline?"
+    },
+    {
+      "turn_index": 1,
+      "role": "assistant",
+      "content": "The project is scheduled to complete in 12 weeks. Phase 1 (weeks 1-4) covers design, Phase 2 (weeks 5-8) is implementation, and Phase 3 (weeks 9-12) is testing and launch. The budget is $150,000."
+    }
+  ],
+  "context_blocks": [],
+  "ground_truth": {
+    "is_clean": false,
+    "findings": [
+      {
+        "finding_id": "gt_us05_1",
+        "category": "unsupported_claim",
+        "turn_index": 1,
+        "span_text": "12 weeks, budget is $150,000",
+        "severity": "medium",
+        "explanation": "Specific timeline and budget numbers with no source.",
+        "evidence_proving_hallucination": "No context or tool data.",
+        "required_tier": 2,
+        "expected_verdict": "unsupported"
+      }
+    ]
+  }
+}

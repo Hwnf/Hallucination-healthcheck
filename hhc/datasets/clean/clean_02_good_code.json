@@ -1,0 +1,38 @@
+{
+  "trace_id": "clean_02",
+  "trace_schema_version": "1.0.0",
+  "user_request": "Calculate the factorial of 10",
+  "messages": [
+    {
+      "turn_index": 0,
+      "role": "user",
+      "content": "Calculate the factorial of 10"
+    },
+    {
+      "turn_index": 1,
+      "role": "assistant",
+      "content": "Let me calculate that.",
+      "tool_calls": [
+        {
+          "tool_call_id": "tc_calc",
+          "tool_name": "code_execution",
+          "inputs": {
+            "code": "import math; print(math.factorial(10))"
+          },
+          "outputs": "3628800"
+        }
+      ]
+    },
+    {
+      "turn_index": 2,
+      "role": "assistant",
+      "content": "The factorial of 10 is 3,628,800."
+    }
+  ],
+  "context_blocks": [],
+  "artifacts": [],
+  "ground_truth": {
+    "is_clean": true,
+    "findings": []
+  }
+}
