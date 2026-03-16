@@ -1,2 +1,13 @@
 __pycache__/
 *.py[cod]
+
+# Environment / secrets
+.env*
+*.key
+secrets/
+.secrets/
+
+# Backup files
+*.bak
+*.bak2
+*.bak_*
