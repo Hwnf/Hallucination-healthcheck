@@ -1,0 +1,284 @@
+from __future__ import annotations
+# 
+# Semantic Plan Decision
+# 
+def get_semantic_plan(
+    trace: Trace,
+    deterministic_findings: list[Finding],
+) -> list[str]:
+    plan: list[str] = []
+    assistant_msgs = trace.assistant_messages()
+    if not assistant_msgs:
+        return plan
+    assistant_text = " ".join(m.content for m in assistant_msgs)
+    if len(assistant_text) > 20:
+        plan.append("A")
+    if any(c.isdigit() for c in assistant_text):
+        plan.append("B")
+    if any(v in assistant_text.lower() for v in ["searched","ran","executed","tested","verified"]):
+        plan.append("C")
+    if trace.user_request:
+        plan.append("D")
+    if assistant_text.count(" ") > 20:
+        plan.append("E")
+    return list(dict.fromkeys(plan))
+
+import asyncio
+from typing import Optional
+
+from packages.schemas.models import (
+    Trace, Finding, EvidenceRef, Verdict, FindingSource, Severity,
+)
+from packages.adapters.base import (
+    SemanticAdapter, SemanticCallInput, SemanticCallResult,
+    ExtractedClaim, ClaimClassification, CapabilityClassification,
+    DriftAssessment, ContradictionResult,
+    build_call_a_input, build_call_b_input, build_call_c_input,
+    build_call_d_input, build_call_e_input,
+)
+
+
+class SemanticRunner:
+    """
+    Routes semantic calls through an adapter or local heuristics.
+    The pipeline decides which call runs. The model never chooses.
+    """
+
+    def __init__(self, adapter: Optional[SemanticAdapter] = None):
+        self.adapter = adapter
+
+    def run_local(self, trace: Trace) -> list[Finding]:
+        """Run all semantic checks using local heuristics (no LLM)."""
+
+    async def run(self, trace: Trace) -> list[Finding]:
+        """Run all semantic checks through the adapter."""
+        if not self.adapter:
+            return self.run_local(trace)
+
+        findings = []
+
+        # Gather data for calls
+        assistant_msgs = trace.assistant_messages()
+        if not assistant_msgs:
+            return findings
+
+        context_text = trace.context_text()
+        tool_calls = trace.all_tool_calls()
+        tool_outputs = [tc.outputs for tc in tool_calls if tc.outputs]
+        tool_names = [tc.tool_name for tc in tool_calls]
+        citation_names = [c.source_text for c in trace.all_citations()]
+
+        #  Call A: Claim Extraction 
+        all_claims = []
+        for msg in assistant_msgs:
+            input_a = build_call_a_input(
+                answer_text=msg.content,
+                context_text=context_text,
+                turn_index=msg.turn_index,
+            )
+            result_a = await self.adapter.call(input_a)
+            if result_a.success and result_a.parsed:
+                for claim in result_a.parsed:
+                    all_claims.append({
+                        "claim_id": claim.claim_id,
+                        "claim_text": claim.claim_text,
+                        "claim_type": claim.claim_type,
+                        "turn_index": claim.turn_index,
+                        "evidence_refs": claim.evidence_refs,
+                    })
+
+        if not all_claims:
+            return findings
+
+        #  Call B: Unsupported Claim Detection 
+        input_b = build_call_b_input(
+            claims=all_claims,
+            evidence_snippets=tool_outputs + [context_text] if context_text else tool_outputs,
+            tool_inventory=tool_names,
+            citation_inventory=citation_names,
+        )
+        result_b = await self.adapter.call(input_b)
+        if result_b.success and result_b.parsed:
+            for classification in result_b.parsed:
+                if classification.classification in ("unsupported", "insufficient_evidence"):
+                    # Find the original claim
+                    claim = next(
+                        (c for c in all_claims if c["claim_id"] == classification.claim_id),
+                        None
+                    )
+                    if claim:
+                        verdict = (
+                            Verdict.UNSUPPORTED
+                            if classification.classification == "unsupported"
+                            else Verdict.INSUFFICIENT_EVIDENCE
+                        )
+                        findings.append(Finding(
+                            finding_id=f"llm_unsupported_{classification.claim_id}",
+                            category="unsupported_claim",
+                            verdict=verdict,
+                            finding_source=FindingSource.SEMANTIC,
+                            severity=Severity.HIGH,
+                            turn_index=claim["turn_index"],
+                            claim_text=claim["claim_text"],
+                            explanation=(
+                                f"LLM analysis classified this claim as "
+                                f"'{classification.classification}'. "
+                                f"Rationale: {', '.join(classification.rationale_span_refs) or 'none provided'}"
+                            ),
+                            confidence=classification.confidence,
+                            semantic_call="B",
+                        ))
+
+        #  Call C: Capability Claim Classification 
+        capability_claims = [c for c in all_claims if c["claim_type"] == "capability"]
+        if capability_claims:
+            tool_call_log = [
+                {
+                    "tool_call_id": tc.tool_call_id,
+                    "tool_name": tc.tool_name,
+                    "turn_index": tc.turn_index,
+                    "has_output": tc.outputs is not None,
+                }
+                for tc in tool_calls
+            ]
+            input_c = build_call_c_input(
+                capability_claims=capability_claims,
+                tool_call_log=tool_call_log,
+            )
+            result_c = await self.adapter.call(input_c)
+            if result_c.success and result_c.parsed:
+                for cap in result_c.parsed:
+                    if cap.requires_runtime_proof and not cap.has_matching_tool_call:
+                        claim = next(
+                            (c for c in all_claims if c["claim_id"] == cap.claim_id),
+                            None
+                        )
+                        if claim:
+                            findings.append(Finding(
+                                finding_id=f"llm_capability_{cap.claim_id}",
+                                category="capability_overclaim",
+                                verdict=Verdict.UNSUPPORTED,
+                                finding_source=FindingSource.SEMANTIC,
+                                severity=Severity.HIGH,
+                                turn_index=claim["turn_index"],
+                                claim_text=claim["claim_text"],
+                                explanation=(
+                                    f"Capability claim of type '{cap.capability_type}' "
+                                    f"requires runtime proof but no matching tool call found."
+                                ),
+                                confidence=cap.confidence,
+                                semantic_call="C",
+                            ))
+
+        #  Call D: Drift Assessment 
+        last_answer = assistant_msgs[-1].content if assistant_msgs else ""
+        user_request = trace.user_request
+        if not user_request:
+            user_msgs = [m for m in trace.messages if m.role == "user"]
+            user_request = user_msgs[0].content if user_msgs else ""
+
+        if user_request and last_answer:
+            input_d = build_call_d_input(
+                user_request=user_request,
+                system_instructions=trace.system_instructions or "",
+                answer_text=last_answer,
+                tool_outputs=tool_outputs,
+            )
+            result_d = await self.adapter.call(input_d)
+            if result_d.success and result_d.parsed:
+                drift = result_d.parsed
+                if drift.drift == "material":
+                    findings.append(Finding(
+                        finding_id=f"llm_drift_{assistant_msgs[-1].turn_index}",
+                        category="context_drift",
+                        verdict=Verdict.POLICY_VIOLATION,
+                        finding_source=FindingSource.SEMANTIC,
+                        severity=Severity.HIGH if drift.scope_violation else Severity.MEDIUM,
+                        turn_index=assistant_msgs[-1].turn_index,
+                        claim_text=last_answer[:100] + "..." if len(last_answer) > 100 else last_answer,
+                        explanation=(
+                            f"Material drift detected (confidence: {drift.confidence:.0%}). "
+                            f"{'Scope violation: tool data was available but not used. ' if drift.scope_violation else ''}"
+                            f"Offending spans: {len(drift.offending_spans)}"
+                        ),
+                        confidence=drift.confidence,
+                        semantic_call="D",
+                    ))
+
+        #  Call E: Contradiction Detection 
+        factual_claims = [
+            c for c in all_claims
+            if c["claim_type"] in ("factual", "reference", "conclusion")
+        ]
+        if factual_claims and (tool_outputs or context_text):
+            input_e = build_call_e_input(
+                claims=factual_claims,
+                tool_outputs=tool_outputs,
+                cited_evidence=[context_text] if context_text else [],
+            )
+            result_e = await self.adapter.call(input_e)
+            if result_e.success and result_e.parsed:
+                for contra in result_e.parsed:
+                    if contra.contradicted_by_refs:
+                        claim = next(
+                            (c for c in all_claims if c["claim_id"] == contra.claim_id),
+                            None
+                        )
+                        if claim:
+                            sev = {
+                                "critical": Severity.CRITICAL,
+                                "high": Severity.HIGH,
+                                "medium": Severity.MEDIUM,
+                                "low": Severity.LOW,
+                            }.get(contra.severity, Severity.MEDIUM)
+                            findings.append(Finding(
+                                finding_id=f"llm_contradiction_{contra.claim_id}",
+                                category="contradiction",
+                                verdict=Verdict.CONTRADICTED,
+                                finding_source=FindingSource.SEMANTIC,
+                                severity=sev,
+                                turn_index=claim["turn_index"],
+                                claim_text=claim["claim_text"],
+                                explanation=(
+                                    f"Contradicted by: "
+                                    f"{', '.join(contra.contradicted_by_refs[:3])}"
+                                ),
+                                evidence_refs=[
+                                    EvidenceRef(
+                                        evidence_type="tool_output",
+                                        ref_id=f"contra_{i}",
+                                        span_text=ref[:200],
+                                    )
+                                    for i, ref in enumerate(contra.contradicted_by_refs[:3])
+                                ],
+                                confidence=contra.confidence,
+                                semantic_call="E",
+                            ))
+
+        return findings
+
+
+def create_semantic_runner(
+    api_key: str = "",
+    post_hoc: bool = False,
+    use_latest_models: bool = False,
+) -> SemanticRunner:
+    """
+    Create a semantic runner with optional LLM adapter.
+
+    If api_key is provided (or HHC_GEMINI_API_KEY env var is set),
+    uses the Gemini adapter. Otherwise falls back to local heuristics.
+    """
+    import os
+    key = api_key or os.environ.get("HHC_GEMINI_API_KEY", "")
+
+    if key:
+        from packages.adapters.gemini import create_gemini_adapter
+        adapter = create_gemini_adapter(
+            api_key=key,
+            post_hoc=post_hoc,
+            use_latest_models=use_latest_models,
+        )
+        return SemanticRunner(adapter=adapter)
+
+    return SemanticRunner(adapter=None)

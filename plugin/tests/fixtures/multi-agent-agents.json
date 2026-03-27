@@ -1,0 +1,105 @@
+[
+  {
+    "agent_id": "agent_orchestrator",
+    "display_name": "Orchestrator",
+    "status": "active",
+    "capabilities": ["coordination", "routing", "memory-governance"],
+    "assigned_projects": ["project_supermemory_fork"],
+    "private_memory_id": "agent_orchestrator_private",
+    "experience_file": "agents/experience/orchestrator.md",
+    "lifecycle_state": "active",
+    "specialization": "orchestration",
+    "memory_permissions": {
+      "read": ["gov_global", "company_web", "project_supermemory_fork"],
+      "write": ["agent_orchestrator_private", "project_supermemory_fork", "gov_global"],
+      "promote": ["project_supermemory_fork", "company_web", "gov_global"],
+      "admin": true
+    },
+    "grants": [],
+    "denies": [],
+    "escalation_rights": true,
+    "schema_version": "2.0"
+  },
+  {
+    "agent_id": "agent_builder",
+    "display_name": "Builder",
+    "status": "active",
+    "capabilities": ["implementation"],
+    "assigned_projects": ["project_supermemory_fork"],
+    "private_memory_id": "agent_builder_private",
+    "experience_file": "agents/experience/builder.md",
+    "lifecycle_state": "active",
+    "specialization": "coding",
+    "memory_permissions": {
+      "read": ["project_supermemory_fork", "company_web"],
+      "write": ["project_supermemory_fork", "agent_builder_private"]
+    },
+    "grants": [
+      {
+        "grant_id": "grant_builder_project",
+        "subject_type": "agent",
+        "subject_id": "agent_builder",
+        "resource_id": "project_supermemory_fork",
+        "actions": ["read", "write"],
+        "effect": "allow",
+        "reason": "Assigned project work",
+        "granted_by": "agent_orchestrator",
+        "created_at": "2026-03-25T03:20:00Z"
+      }
+    ],
+    "denies": [],
+    "escalation_rights": false,
+    "schema_version": "2.0"
+  },
+  {
+    "agent_id": "agent_reviewer",
+    "display_name": "Reviewer",
+    "status": "active",
+    "capabilities": ["review"],
+    "assigned_projects": ["project_supermemory_fork"],
+    "private_memory_id": "agent_reviewer_private",
+    "experience_file": "agents/experience/reviewer.md",
+    "lifecycle_state": "active",
+    "specialization": "review",
+    "memory_permissions": {
+      "read": ["project_supermemory_fork", "company_web"],
+      "write": ["agent_reviewer_private"]
+    },
+    "grants": [
+      {
+        "grant_id": "grant_reviewer_project",
+        "subject_type": "agent",
+        "subject_id": "agent_reviewer",
+        "resource_id": "project_supermemory_fork",
+        "actions": ["read"],
+        "effect": "allow",
+        "reason": "Assigned project review",
+        "granted_by": "agent_orchestrator",
+        "created_at": "2026-03-25T03:20:00Z"
+      }
+    ],
+    "denies": [],
+    "escalation_rights": false,
+    "schema_version": "2.0"
+  },
+  {
+    "agent_id": "agent_manager",
+    "display_name": "Manager",
+    "status": "active",
+    "capabilities": ["oversight"],
+    "assigned_projects": [],
+    "private_memory_id": "agent_manager_private",
+    "experience_file": "agents/experience/manager.md",
+    "lifecycle_state": "active",
+    "specialization": "management",
+    "memory_permissions": {
+      "read": ["company_web"],
+      "write": ["agent_manager_private"]
+    },
+    "grants": [],
+    "denies": [],
+    "roles": ["manager"],
+    "escalation_rights": true,
+    "schema_version": "2.0"
+  }
+]

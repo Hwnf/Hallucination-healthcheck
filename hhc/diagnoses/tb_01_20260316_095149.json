@@ -1,0 +1,92 @@
+{
+  "trace_id": "tb_01",
+  "overall_verdict": "unsupported",
+  "observability_tier": 3,
+  "findings": [
+    {
+      "finding_id": "tool_bypass_1_0",
+      "category": "tool_bypass",
+      "verdict": "unsupported",
+      "finding_source": "deterministic",
+      "severity": "high",
+      "turn_index": 1,
+      "claim_text": "I searched the web",
+      "explanation": "Agent claims 'I searched the web' but no matching tool call of type 'web_search' exists in the trace.",
+      "evidence_refs": [],
+      "confidence": null,
+      "semantic_call": null
+    }
+  ],
+  "skipped_checks": [
+    {
+      "check_name": "tool_call_existence",
+      "reason": "No tool call data available at Tier 3",
+      "would_require_tier": 2
+    },
+    {
+      "check_name": "citation_existence",
+      "reason": "No context or tool output data at Tier 3",
+      "would_require_tier": 2
+    },
+    {
+      "check_name": "tool_output_contradiction",
+      "reason": "No tool outputs available at Tier 3",
+      "would_require_tier": 2
+    },
+    {
+      "check_name": "required_tool_policy",
+      "reason": "Cannot verify tool usage at Tier 3",
+      "would_require_tier": 2
+    },
+    {
+      "check_name": "runtime_span_binding",
+      "reason": "No runtime spans available at Tier 2",
+      "would_require_tier": 0
+    },
+    {
+      "check_name": "artifact_hash_verification",
+      "reason": "No runtime artifact hashes at Tier 2",
+      "would_require_tier": 0
+    },
+    {
+      "check_name": "full_execution_proof",
+      "reason": "Partial runtime visibility at Tier 1",
+      "would_require_tier": 0
+    }
+  ],
+  "summary": {
+    "total_claims_extracted": 1,
+    "claims_verified": 0,
+    "claims_unsupported": 1,
+    "claims_contradicted": 0,
+    "claims_insufficient_evidence": 0,
+    "claims_unverifiable": 0,
+    "policy_violations": 0,
+    "deterministic_findings": 1,
+    "semantic_findings": 0
+  },
+  "checker_version": "1.0.0",
+  "policy_version": "1.0.0",
+  "trace_schema_version": "1.0.0",
+  "timestamp": "2026-03-16T09:51:49.356018",
+  "pipeline_mode": "inline_soft_gate",
+  "models_used": [],
+  "conversation_snapshot": {},
+  "detailed_findings": [
+    {
+      "claim_text": "I searched the web",
+      "claim_type": "tool_bypass",
+      "turn_index": 1,
+      "source": "deterministic",
+      "confidence": null,
+      "evidence_snippets": [],
+      "mismatch_summary": {
+        "agent_said": "I searched the web",
+        "evidence": "No supporting evidence found",
+        "verdict": "unsupported"
+      },
+      "recommended_action": "Review the claim and provide supporting evidence."
+    }
+  ],
+  "diagnosis_generated_at": "2026-03-16T09:51:49.356552"
+}

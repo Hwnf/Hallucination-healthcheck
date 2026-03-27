@@ -1,0 +1,20 @@
+{
+  "archiveMemoryId": "archive_project_supermemory_fork",
+  "projectId": "project_supermemory_fork",
+  "archivedAt": "2026-03-27T01:24:02.748Z",
+  "archivedBy": "agent_orchestrator",
+  "closeoutBatch": "closeout_2026_03_27_project_supermemory_fork",
+  "projectStatusAtClose": "completed",
+  "summaryRef": "archive://project_supermemory_fork/summary",
+  "decisionIndexRef": "archive://project_supermemory_fork/decisions",
+  "artifactIndexRef": "archive://project_supermemory_fork/artifacts",
+  "experienceExtractions": [],
+  "promotionOutputs": {
+    "company": [],
+    "governance": [],
+    "user": [],
+    "experience": []
+  },
+  "accessPolicy": "cold_storage_default",
+  "sensitivity": "internal"
+}

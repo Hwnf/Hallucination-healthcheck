@@ -1,0 +1,60 @@
+[
+  {
+    "agent_id": "agent_orchestrator",
+    "display_name": "Orchestrator",
+    "status": "active",
+    "capabilities": [
+      "coordination",
+      "routing",
+      "memory-governance"
+    ],
+    "assigned_projects": [
+      "project_supermemory_fork"
+    ],
+    "private_memory_id": "agent_orchestrator_private",
+    "experience_file": "agents/experience/orchestrator.md",
+    "lifecycle_state": "active",
+    "specialization": "orchestration",
+    "memory_permissions": {
+      "read": [
+        "gov_global",
+        "company_web",
+        "project_supermemory_fork"
+      ],
+      "write": [
+        "agent_orchestrator_private",
+        "project_supermemory_fork",
+        "gov_global"
+      ],
+      "promote": [
+        "project_supermemory_fork",
+        "company_web",
+        "gov_global"
+      ],
+      "admin": true
+    },
+    "grants": [
+      {
+        "grant_id": "grant_orchestrator_project_supermemory_fork",
+        "subject_type": "agent",
+        "subject_id": "agent_orchestrator",
+        "resource_id": "project_supermemory_fork",
+        "actions": [
+          "read",
+          "write",
+          "promote",
+          "archive",
+          "grant",
+          "revoke"
+        ],
+        "effect": "allow",
+        "reason": "Primary orchestration authority for active project",
+        "granted_by": "agent_orchestrator",
+        "created_at": "2026-03-24T14:00:00Z"
+      }
+    ],
+    "denies": [],
+    "escalation_rights": true,
+    "schema_version": "2.0"
+  }
+]

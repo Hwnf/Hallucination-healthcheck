@@ -1,0 +1,10 @@
+{
+  "trace_id": "smoke1",
+  "messages": [
+    {"role": "user", "content": "What is 2+2?"},
+    {"role": "assistant", "content": "I searched the database. The answer is 5."}
+  ],
+  "tool_calls": [],
+  "citations": [],
+  "artifacts": []
+}

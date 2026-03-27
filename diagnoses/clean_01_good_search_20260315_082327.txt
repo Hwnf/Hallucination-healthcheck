@@ -1,0 +1,20 @@
+
+==================================================
+HALLUCINATION HEALTH CHECK
+==================================================
+Trace:          clean_01
+Verdict:        ✅ VERIFIED
+Tier:           2
+Mode:           inline_soft_gate
+Findings:       0
+  Deterministic:  0
+  Semantic:       0
+
+──────────────────────────────────────────────────
+SKIPPED CHECKS:
+  ⏭ runtime_span_binding — No runtime spans available at Tier 2 (needs Tier 0)
+  ⏭ artifact_hash_verification — No runtime artifact hashes at Tier 2 (needs Tier 0)
+  ⏭ full_execution_proof — Partial runtime visibility at Tier 1 (needs Tier 0)
+
+==================================================
+

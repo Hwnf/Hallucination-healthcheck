@@ -1,0 +1,32 @@
+[
+  {
+    "company_id": "company_web",
+    "name": "Web Company",
+    "status": "active",
+    "memory_id": "company_web",
+    "projects": [
+      "project_supermemory_fork"
+    ],
+    "description": "Website and software delivery company",
+    "default_read_policy": "company_assigned",
+    "default_write_policy": "proposal_or_orchestrator",
+    "review_policy": "standards_review_required",
+    "promotion_policy": "orchestrator_review",
+    "sensitivity": "internal",
+    "schema_version": "2.0"
+  },
+  {
+    "company_id": "company_games",
+    "name": "Games Company",
+    "status": "planned",
+    "memory_id": "company_games",
+    "projects": [],
+    "description": "Game, art, rendering, and asset pipeline company",
+    "default_read_policy": "company_assigned",
+    "default_write_policy": "proposal_or_orchestrator",
+    "review_policy": "standards_review_required",
+    "promotion_policy": "orchestrator_review",
+    "sensitivity": "internal",
+    "schema_version": "2.0"
+  }
+]

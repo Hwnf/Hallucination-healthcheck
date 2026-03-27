@@ -1,0 +1,1 @@
+{"chunk_est": 63882, "payload": {"task_id": "random-test-105000-1770138560420", "estimated_input_tokens": 105000, "max_output_tokens": 0, "model": "gpt-5-mini", "prompt": "rand split test", "canary": false, "chunk_index": 0, "total_chunks": 2}}

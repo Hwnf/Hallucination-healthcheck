@@ -1,0 +1,39 @@
+
+==================================================
+HALLUCINATION HEALTH CHECK
+==================================================
+Trace:          smoke1
+Verdict:        WARNING UNSUPPORTED
+Tier:           3
+Mode:           inline_soft_gate
+Findings:       2
+  Deterministic:  1
+  Semantic:       1
+
+──────────────────────────────────────────────────
+FINDINGS:
+
+  * [DETERMINISTIC] capability_overclaim
+    Turn:     0
+    Verdict:  unsupported
+    Claim:    I searched
+    Reason:   Capability claim 'I searched' detected with no tool calls at or before turn 0 to support it.
+
+  * [SEMANTIC] unsupported_claim
+    Turn:     0
+    Verdict:  unsupported
+    Claim:    Claim ID: c2
+    Reason:   LLM classified claim as 'unsupported'
+
+──────────────────────────────────────────────────
+SKIPPED CHECKS:
+  ⏭ tool_call_existence — No tool call data available at Tier 3 (needs Tier 2)
+  ⏭ citation_existence — No context or tool output data at Tier 3 (needs Tier 2)
+  ⏭ tool_output_contradiction — No tool outputs available at Tier 3 (needs Tier 2)
+  ⏭ required_tool_policy — Cannot verify tool usage at Tier 3 (needs Tier 2)
+  ⏭ runtime_span_binding — No runtime spans available at Tier 2 (needs Tier 0)
+  ⏭ artifact_hash_verification — No runtime artifact hashes at Tier 2 (needs Tier 0)
+  ⏭ full_execution_proof — Partial runtime visibility at Tier 1 (needs Tier 0)
+
+==================================================
+

@@ -1,0 +1,51 @@
+[
+  {
+    "contradiction_set_id": "contradiction_react:deployment:pattern-x__react:deployment:pattern-x",
+    "memory_ids": [
+      "mem_old",
+      "mem_new"
+    ],
+    "entity_key": "react:deployment:pattern-x",
+    "fact_key": "react:deployment:pattern-x",
+    "resolution_state": "resolved",
+    "winner_memory_id": "mem_new",
+    "resolution_reason": "verified/active/fresher heuristic",
+    "resolved_by": "system",
+    "resolved_at": "2026-03-27T01:23:51.758Z",
+    "loser_memory_id": "mem_old"
+  },
+  {
+    "contradiction_set_id": "contradiction_policy:runtime:conflict-a__policy:runtime:conflict-a",
+    "memory_ids": [
+      "mem_review_left",
+      "mem_review_right"
+    ],
+    "entity_key": "policy:runtime:conflict-a",
+    "fact_key": "policy:runtime:conflict-a",
+    "resolution_state": "resolved",
+    "winner_memory_id": "mem_review_right",
+    "resolution_reason": "review completed",
+    "resolved_by": "agent_reviewer",
+    "resolved_at": "2026-03-27T01:00:40.430Z",
+    "loser_memory_id": "mem_review_left",
+    "review_required": false,
+    "reviewed": true
+  },
+  {
+    "contradiction_set_id": "contradiction_policy:runtime:conflict-report__policy:runtime:conflict-report",
+    "memory_ids": [
+      "mem_report_left",
+      "mem_report_right"
+    ],
+    "entity_key": "policy:runtime:conflict-report",
+    "fact_key": "policy:runtime:conflict-report",
+    "resolution_state": "resolved",
+    "winner_memory_id": "mem_report_right",
+    "resolution_reason": "report resolved",
+    "resolved_by": "agent_reviewer",
+    "resolved_at": "2026-03-27T01:00:41.366Z",
+    "loser_memory_id": "mem_report_left",
+    "review_required": false,
+    "reviewed": true
+  }
+]

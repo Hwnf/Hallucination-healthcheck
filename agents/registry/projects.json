@@ -1,0 +1,42 @@
+[
+  {
+    "project_id": "project_supermemory_fork",
+    "company_id": "company_web",
+    "status": "archived",
+    "lifecycle_state": "archived",
+    "memory_id": "project_supermemory_fork",
+    "archive_memory_id": "archive_project_supermemory_fork",
+    "assigned_agents": [
+      "agent_orchestrator"
+    ],
+    "completion_policy": {
+      "archive_on_close": true,
+      "extract_experience": true,
+      "wipe_specialized_memory": true,
+      "cold_storage_access": [
+        "agent_orchestrator",
+        "operators",
+        "managers"
+      ]
+    },
+    "closeout_policy": {
+      "required": true,
+      "extract_experience": true,
+      "promotion_review_required": true,
+      "archive_bundle_required": true,
+      "revoke_default_access_on_archive": true
+    },
+    "closeout_owner": "agent_orchestrator",
+    "closeout_summary_ref": "archive://project_supermemory_fork/summary",
+    "archive_manifest_ref": "/root/.openclaw/workspace/agents/archives/project_supermemory_fork.manifest.json",
+    "last_closeout_attempt": "2026-03-27T01:24:02.752Z",
+    "schema_version": "2.0",
+    "archived_at": "2026-03-27T01:24:02.748Z",
+    "archived_by": "agent_orchestrator",
+    "restore_required": true,
+    "restored_at": "2026-03-27T01:23:59.360Z",
+    "restored_by": "agent_orchestrator",
+    "last_restore_reason": "Resume archived project for follow-up work",
+    "reopened_from_archive": true
+  }
+]

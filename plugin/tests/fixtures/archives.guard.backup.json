@@ -1,0 +1,22 @@
+[
+  {
+    "archive_id": "closeout_2026_03_27_project_supermemory_fork",
+    "project_id": "project_supermemory_fork",
+    "archive_memory_id": "archive_project_supermemory_fork",
+    "status": "archived",
+    "archived_by": "agent_orchestrator",
+    "archived_at": "2026-03-27T01:00:42.193Z",
+    "summary_ref": "archive://project_supermemory_fork/summary",
+    "decision_index_ref": "archive://project_supermemory_fork/decisions",
+    "artifact_index_ref": "archive://project_supermemory_fork/artifacts",
+    "access_policy": "cold_storage_default",
+    "sensitivity": "internal",
+    "promotion_outputs": {
+      "company": [],
+      "governance": [],
+      "user": [],
+      "experience": []
+    },
+    "experience_extractions": []
+  }
+]

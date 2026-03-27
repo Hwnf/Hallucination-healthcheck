@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Multi-Agent Memory Blueprint v2 (Public-Safe)</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Multi-Agent Memory Blueprint v2 (Public-Safe)</h1>
+</header>
+<h1 id="multi-agent-memory-blueprint-v2-public-safe">Multi-Agent Memory
+Blueprint v2 (Public-Safe)</h1>
+<h2 id="purpose">Purpose</h2>
+<p>Blueprint v2 defines the operational memory model for a multi-agent
+system built on: - <strong>OpenClaw</strong> for runtime, sessions, and
+messaging - <strong>Paperclip</strong> for organization, governance, and
+task orchestration - <strong>Supermemory</strong> for memory storage,
+retrieval, and recall primitives</p>
+<p>It is designed to support strong memory hygiene, clean handoffs,
+scoped access, project archival, and long-term specialization as the
+system scales.</p>
+<hr />
+<h2 id="design-goals">Design Goals</h2>
+<ul>
+<li>prevent shared-memory pollution</li>
+<li>preserve agent specialization without breaking collaboration</li>
+<li>separate active context from historical memory</li>
+<li>make promotion, retrieval, and archive behavior enforceable</li>
+<li>support scale toward large multi-agent systems without coordination
+collapse</li>
+</ul>
+<hr />
+<h2 id="system-roles">System Roles</h2>
+<h3 id="orchestrator">Orchestrator</h3>
+<p>Top-level coordination authority. Can create shared memory spaces,
+grant/revoke access, approve promotions, finalize archive state, and
+inspect restricted/private scopes when policy allows and auditing
+exists.</p>
+<h3 id="operators-managers-operatives">Operators / Managers /
+Operatives</h3>
+<p>Privileged operational roles with assigned but not blanket
+access.</p>
+<h3 id="agents">Agents</h3>
+<p>Execution principals that use private memory, assigned project
+memory, and explicitly granted company/restricted memory.</p>
+<h3 id="system-services">System Services</h3>
+<p>Named automated principals used for maintenance, indexing, summaries,
+deduplication, or audits.</p>
+<hr />
+<h2 id="memory-hierarchy">Memory Hierarchy</h2>
+<h3 id="global-governance">0. Global Governance</h3>
+<p>System-wide rules, coordination laws, permanent standards.</p>
+<h3 id="company-memory">1. Company Memory</h3>
+<p>Durable domain knowledge shared across projects in the same
+company.</p>
+<h3 id="project-shared-memory">2. Project Shared Memory</h3>
+<p>Live collaboration memory for active projects.</p>
+<h3 id="restricted-shared-memory">3. Restricted Shared Memory</h3>
+<p>Limited-scope shared memory for named groups only.</p>
+<h3 id="agent-private-memory">4. Agent Private Memory</h3>
+<p>Local durable working memory for an individual agent.</p>
+<h3 id="agent-experience">5. Agent Experience</h3>
+<p>Curated long-term specialization knowledge.</p>
+<h3 id="user-memory">6. User Memory</h3>
+<p>User-specific persistent preferences and facts.</p>
+<h3 id="session-memory">7. Session Memory</h3>
+<p>Active thread/session continuity.</p>
+<h3 id="ephemeral-context">8. Ephemeral Context</h3>
+<p>Very short-lived context that usually dies quickly unless
+promoted.</p>
+<h3 id="cold-storage">9. Cold Storage</h3>
+<p>Archived completed project memory; historical, not routine
+retrieval.</p>
+<hr />
+<h2 id="access-control-model">Access Control Model</h2>
+<h3 id="core-rule">Core Rule</h3>
+<p>Default posture: <strong>deny unless explicitly allowed</strong>.</p>
+<h3 id="permission-verbs">Permission Verbs</h3>
+<ul>
+<li>read</li>
+<li>write</li>
+<li>update</li>
+<li>append</li>
+<li>promote</li>
+<li>approve</li>
+<li>archive</li>
+<li>restore</li>
+<li>grant</li>
+<li>revoke</li>
+<li>audit</li>
+<li>delete</li>
+</ul>
+<h3 id="canonical-acl-rules">Canonical ACL Rules</h3>
+<ul>
+<li>deny beats allow</li>
+<li>restricted/private/user/cold storage do not inherit by default</li>
+<li>project assignment grants project access only</li>
+<li>company membership may grant company access where policy allows</li>
+<li>session participation grants session access only</li>
+<li>archived resources stop inheritance and require explicit archive
+authorization</li>
+<li>all sensitive reads and ACL mutations are audited</li>
+</ul>
+<h3 id="sensitivity-vs-visibility">Sensitivity vs Visibility</h3>
+<p>These are separate: - <strong>visibility</strong> = who may access -
+<strong>sensitivity</strong> = how risky the content is if
+mishandled</p>
+<hr />
+<h2 id="write-rules-and-memory-hygiene">Write Rules and Memory
+Hygiene</h2>
+<h3 id="write">Write</h3>
+<ul>
+<li>verified findings</li>
+<li>confirmed blockers</li>
+<li>decisions</li>
+<li>reusable lessons</li>
+<li>handoff-critical state</li>
+<li>durable company methods</li>
+<li>stable user facts/preferences</li>
+</ul>
+<h3 id="do-not-write">Do Not Write</h3>
+<ul>
+<li>raw chatter</li>
+<li>duplicate updates</li>
+<li>speculative noise without labeling</li>
+<li>verbose logs when concise summaries exist</li>
+<li>stale project residue</li>
+<li>unbounded tool output</li>
+<li>unnecessary secrets in broader scopes</li>
+</ul>
+<h3 id="compression-rule">Compression Rule</h3>
+<p>Before broad storage or promotion, compress memory into one of: -
+fact - decision - constraint - policy - playbook - lesson - anti-pattern
+- handoff summary</p>
+<hr />
+<h2 id="promotion-model">Promotion Model</h2>
+<h3 id="core-principle">Core Principle</h3>
+<p>Promotion is a <strong>lossy distillation step</strong>. Higher
+layers must contain: - less volume - higher confidence - broader reuse
+value - lower project-specific residue - clearer ownership</p>
+<h3 id="default-promotion-path">Default Promotion Path</h3>
+<ul>
+<li>ephemeral/session -&gt; agent_private</li>
+<li>agent_private -&gt; project</li>
+<li>project -&gt; company</li>
+<li>company -&gt; governance</li>
+</ul>
+<h3 id="side-paths">Side Paths</h3>
+<ul>
+<li>project -&gt; experience</li>
+<li>agent_private -&gt; experience</li>
+<li>user/session -&gt; user</li>
+<li>project -&gt; cold_storage through closeout only</li>
+</ul>
+<h3 id="promotion-gates">Promotion Gates</h3>
+<p>A memory should be promoted only if it passes: 1. truth/confidence
+gate 2. reuse gate 3. scope-fit gate 4. compression gate 5. ownership
+gate</p>
+<h3 id="suggested-thresholds">Suggested Thresholds</h3>
+<ul>
+<li>to project: confidence &gt;= 0.65</li>
+<li>to company: confidence &gt;= 0.80</li>
+<li>to governance: confidence &gt;= 0.90</li>
+</ul>
+<hr />
+<h2 id="retrieval-strategy">Retrieval Strategy</h2>
+<h3 id="core-principle-1">Core Principle</h3>
+<p>Scope before similarity. Search the most relevant layer first, not
+the largest one.</p>
+<h3 id="retrieval-defaults-by-scenario">Retrieval Defaults by
+Scenario</h3>
+<h4 id="active-project-execution">Active project execution</h4>
+<ol type="1">
+<li>session</li>
+<li>ephemeral</li>
+<li>project</li>
+<li>restricted</li>
+<li>user</li>
+<li>company</li>
+<li>governance</li>
+<li>experience</li>
+</ol>
+<p>Cold storage disabled.</p>
+<h4 id="policycompliance-question">Policy/compliance question</h4>
+<ol type="1">
+<li>governance</li>
+<li>restricted</li>
+<li>company</li>
+<li>project</li>
+</ol>
+<h4 id="user-personalization">User personalization</h4>
+<ol type="1">
+<li>user</li>
+<li>session</li>
+<li>project if task-specific</li>
+</ol>
+<h4 id="how-did-we-solve-this-before">“How did we solve this
+before?”</h4>
+<ol type="1">
+<li>project</li>
+<li>experience</li>
+<li>company</li>
+<li>cold storage</li>
+</ol>
+<h3 id="hard-filters-before-ranking">Hard Filters Before Ranking</h3>
+<ul>
+<li>ACL visibility</li>
+<li>relevant project/company/user/session IDs</li>
+<li>active/approved status by default</li>
+<li>valid effective time window</li>
+<li>exclude archived by default</li>
+<li>exclude superseded by default</li>
+</ul>
+<h3 id="canonical-ranking-rules">Canonical Ranking Rules</h3>
+<ol type="1">
+<li>Never retrieve archived or superseded memories by default.</li>
+<li>Project memory outranks company memory for active project work.</li>
+<li>Governance outranks everything for rules and safety.</li>
+<li>User-confirmed preferences outrank inferred preferences.</li>
+<li>Curated summaries outrank raw logs.</li>
+<li>Contradictions require explicit winner/loser metadata.</li>
+<li>Ephemeral memory dies quickly unless promoted.</li>
+<li>Completed project memory moves to cold storage and stops polluting
+normal recall.</li>
+</ol>
+<hr />
+<h2 id="lifecycle-management">Lifecycle Management</h2>
+<h3 id="lifecycle-state-machine">Lifecycle State Machine</h3>
+<p>proposed -&gt; approved -&gt; active -&gt; stale -&gt; archived</p>
+<p>Additional states: - rejected - superseded - disputed - resolved</p>
+<h3 id="ttl-review-defaults">TTL / Review Defaults</h3>
+<ul>
+<li>governance: persistent, periodic review</li>
+<li>company: persistent, periodic review</li>
+<li>project: lifecycle-bound, archive on completion or prolonged
+inactivity</li>
+<li>restricted: persistent or project-bound</li>
+<li>private: medium-term, stales and purges if unused</li>
+<li>experience: persistent curated layer</li>
+<li>user: persistent with periodic verification</li>
+<li>session: short-term</li>
+<li>ephemeral: minutes to task duration</li>
+<li>cold storage: archival only</li>
+</ul>
+<h3 id="stale-rule">Stale Rule</h3>
+<p>A memory becomes stale when it is old, unverified, tied to a
+completed project, repeatedly outranked, or no longer relevant to active
+execution.</p>
+<hr />
+<h2 id="project-closeout-protocol">Project Closeout Protocol</h2>
+<p>Project closeout is mandatory.</p>
+<h3 id="trigger-states">Trigger States</h3>
+<ul>
+<li>completed</li>
+<li>cancelled</li>
+<li>paused long-term</li>
+<li>superseded</li>
+</ul>
+<h3 id="closeout-checklist">Closeout Checklist</h3>
+<ol type="1">
+<li>project marked closing</li>
+<li>active memory frozen</li>
+<li>bottlenecks extracted</li>
+<li>durable lessons reviewed</li>
+<li>specialist experience updated</li>
+<li>archive package created</li>
+<li>access revoked/reduced</li>
+<li>archive manifest written</li>
+<li>low-value active residue sanitized</li>
+</ol>
+<h3 id="closeout-phases">Closeout Phases</h3>
+<ol type="1">
+<li>freeze</li>
+<li>distill</li>
+<li>promote</li>
+<li>archive package</li>
+<li>revoke/reduce access</li>
+<li>sanitize active scopes</li>
+</ol>
+<h3 id="extraction-limits">Extraction Limits</h3>
+<ul>
+<li>max 5 durable lessons per specialist per project</li>
+<li>max 10 archive tags</li>
+<li>max 1 short archive summary</li>
+<li>max 3 company-promotion candidates</li>
+</ul>
+<hr />
+<h2 id="experience-system">Experience System</h2>
+<h3 id="what-experience-is">What Experience Is</h3>
+<p>A curated specialist layer for: - repeated bottlenecks - reliable
+tactics - failure signatures - heuristics worth carrying forward</p>
+<h3 id="what-experience-is-not">What Experience Is Not</h3>
+<ul>
+<li>raw project memory</li>
+<li>archive dumping</li>
+<li>diaries or long narrative summaries</li>
+</ul>
+<h3 id="experience-entry-format">Experience Entry Format</h3>
+<ul>
+<li>pattern</li>
+<li>signal</li>
+<li>interpretation</li>
+<li>action</li>
+<li>boundaries</li>
+<li>evidence</li>
+<li>source projects</li>
+<li>confidence</li>
+<li>last validated</li>
+<li>promotion candidate</li>
+</ul>
+<hr />
+<h2 id="metadata-themes">Metadata Themes</h2>
+<p>All important durable memory should support: - lineage - review state
+- contradiction handling - TTL/lifecycle state - sensitivity/visibility
+separation - retrieval hints - provenance strength</p>
+<p>Important fields include: - schema_version - memory_id -
+canonical_key - memory_type - memory_scope - visibility - sensitivity -
+status - confidence - review_status - verification_state - promoted_from
+- promotion_state - promotion_reason - derived_from - supersedes -
+superseded_by - contradiction_set - effective_from - effective_until -
+ttl - expires_at - last_validated_at - retrieval_priority -
+quality_score - dedup_key - timestamp</p>
+<hr />
+<h2 id="registries-and-files">Registries and Files</h2>
+<h3 id="existing-registries">Existing registries</h3>
+<ul>
+<li>agents.json</li>
+<li>companies.json</li>
+<li>projects.json</li>
+<li>memory_spaces.json</li>
+</ul>
+<h3 id="new-registries-recommended">New registries recommended</h3>
+<ul>
+<li>promotions.json</li>
+<li>archives.json</li>
+<li>experience_index.json</li>
+<li>optionally policies.json</li>
+</ul>
+<h3 id="policy-files">Policy files</h3>
+<ul>
+<li>ACL policy</li>
+<li>promotion rules</li>
+<li>retrieval policy</li>
+<li>lifecycle policy</li>
+<li>closeout protocol</li>
+<li>contradiction policy</li>
+<li>metadata schema v2</li>
+</ul>
+<hr />
+<h2 id="naming-conventions">Naming Conventions</h2>
+<p>Examples: - gov_global - company_web - project_supermemory_fork -
+restricted_billing - agent_orchestrator_private -
+archive_project_supermemory_fork</p>
+<p>Canonical keys should describe durable meaning rather than raw source
+text.</p>
+<hr />
+<h2 id="initial-implementation-plan">Initial Implementation Plan</h2>
+<h3 id="minimum-viable-v2">Minimum viable v2</h3>
+<ol type="1">
+<li>finalize v2 docs</li>
+<li>adopt metadata v2 fields</li>
+<li>add promotion and closeout registries</li>
+<li>enforce default deny ACLs</li>
+<li>exclude archived/superseded memory by default</li>
+<li>implement project closeout workflow</li>
+<li>make cold storage non-routine</li>
+</ol>
+<h3 id="manual-first-automated-later">Manual First, Automated Later</h3>
+<p>Can remain manual initially: - promotion review - archive manifest
+writing - experience extraction - contradiction resolution</p>
+<p>Should later become automated: - dedup checks - stale detection -
+archive packaging - promotion candidate scoring - ACL audit analysis</p>
+<hr />
+<h2 id="one-sentence-summary">One-Sentence Summary</h2>
+<p>Blueprint v2 defines a scoped, reviewable memory lifecycle in which
+active project context is distilled into durable experience, company
+standards, and rare governance rules, while completed project memory is
+frozen, packaged, and moved to cold storage instead of leaking into
+routine recall.</p>
+</body>
+</html>

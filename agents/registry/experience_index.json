@@ -1,0 +1,12 @@
+[
+  {
+    "experience_owner": "agent_orchestrator",
+    "file": "agents/experience/orchestrator.md",
+    "lesson_keys": [
+      "timeouts:retry-pattern",
+      "handoff:summary-minimum",
+      "project_supermemory_fork:closeout:lesson"
+    ],
+    "last_updated": "2026-03-27T01:24:02.765Z"
+  }
+]

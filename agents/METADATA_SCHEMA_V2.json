@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Blueprint V2 Memory Metadata",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "memory_id",
+    "memory_scope",
+    "visibility",
+    "status",
+    "timestamp"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "2.0" },
+    "memory_id": { "type": "string" },
+    "canonical_key": { "type": ["string", "null"] },
+    "memory_type": {
+      "type": ["string", "null"],
+      "enum": ["fact", "decision", "constraint", "playbook", "lesson", "anti_pattern", "preference", "handoff", "status_summary", "policy", "hypothesis", "archive_manifest", null]
+    },
+    "agent_id": { "type": ["string", "null"] },
+    "agent_name": { "type": ["string", "null"] },
+    "agent_kind": { "type": ["string", "null"] },
+    "company_id": { "type": ["string", "null"] },
+    "project_id": { "type": ["string", "null"] },
+    "user_id": { "type": ["string", "null"] },
+    "conversation_id": { "type": ["string", "null"] },
+    "memory_scope": {
+      "type": "string",
+      "enum": ["governance", "company", "project", "restricted_shared", "agent_private", "experience", "user", "session", "cold_storage", "ephemeral"]
+    },
+    "visibility": {
+      "type": "string",
+      "enum": ["shared", "restricted", "private", "orchestrator_only", "operator_only", "manager_operator_only"]
+    },
+    "sensitivity": {
+      "type": ["string", "null"],
+      "enum": ["public_safe", "internal", "restricted", "secret", null]
+    },
+    "written_by": { "type": ["string", "null"] },
+    "approved_by": { "type": ["string", "null"] },
+    "promoted_from": { "type": ["string", "null"] },
+    "promotion_state": { "type": ["string", "null"], "enum": ["none", "candidate", "proposed", "approved", "promoted", "rejected", null] },
+    "promotion_reason": { "type": ["string", "null"] },
+    "review_status": { "type": ["string", "null"], "enum": ["unreviewed", "approved", "rejected", "needs_revision", "superseded", null] },
+    "status": { "type": "string", "enum": ["proposed", "approved", "active", "archived", "stale", "rejected", "superseded", "disputed", "resolved"] },
+    "confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+    "importance": { "type": ["string", "null"] },
+    "retention": { "type": ["string", "null"], "enum": ["ephemeral", "short_term", "project_lifecycle", "persistent", "archival", null] },
+    "verification_state": { "type": ["string", "null"], "enum": ["unverified", "provisional", "verified", "disputed", "resolved", null] },
+    "provenance_strength": { "type": ["string", "null"], "enum": ["low", "medium", "high", null] },
+    "source_type": { "type": ["string", "null"] },
+    "source_ref": { "type": ["string", "null"] },
+    "derived_from": { "type": ["array", "null"], "items": { "type": "string" } },
+    "contradiction_set": { "type": ["string", "null"] },
+    "supersedes": { "type": ["array", "null"], "items": { "type": "string" } },
+    "superseded_by": { "type": ["string", "null"] },
+    "effective_from": { "type": ["string", "null"] },
+    "effective_until": { "type": ["string", "null"] },
+    "ttl": { "type": ["string", "null"] },
+    "expires_at": { "type": ["string", "null"] },
+    "last_validated_at": { "type": ["string", "null"] },
+    "retrieval_priority": { "type": ["number", "null"] },
+    "quality_score": { "type": ["number", "null"] },
+    "dedup_key": { "type": ["string", "null"] },
+    "tags": { "type": ["array", "null"], "items": { "type": "string" } },
+    "timestamp": { "type": "string" }
+  },
+  "additionalProperties": true
+}

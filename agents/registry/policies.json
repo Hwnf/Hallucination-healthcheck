@@ -1,0 +1,38 @@
+[
+  {
+    "policy_id": "acl_policy_v2",
+    "file": "agents/ACL_POLICY.md",
+    "status": "active",
+    "schema_version": "2.0"
+  },
+  {
+    "policy_id": "retrieval_policy_v2",
+    "file": "agents/RETRIEVAL_POLICY.md",
+    "status": "active",
+    "schema_version": "2.0"
+  },
+  {
+    "policy_id": "lifecycle_policy_v2",
+    "file": "agents/LIFECYCLE_POLICY.md",
+    "status": "active",
+    "schema_version": "2.0"
+  },
+  {
+    "policy_id": "promotion_rules_v2",
+    "file": "agents/PROMOTION_RULES.md",
+    "status": "active",
+    "schema_version": "2.0"
+  },
+  {
+    "policy_id": "closeout_protocol_v2",
+    "file": "agents/CLOSEOUT_PROTOCOL.md",
+    "status": "active",
+    "schema_version": "2.0"
+  },
+  {
+    "policy_id": "contradiction_policy_v2",
+    "file": "agents/CONTRADICTION_POLICY.md",
+    "status": "active",
+    "schema_version": "2.0"
+  }
+]

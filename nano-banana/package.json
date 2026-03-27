@@ -1,0 +1,15 @@
+{
+  "name": "nano-banana",
+  "version": "1.0.0",
+  "description": "Nano Banana CLI - Generate images with Gemini 3 Pro Image Preview",
+  "type": "module",
+  "bin": {
+    "nano-banana": "bin/nano-banana.js"
+  },
+  "scripts": {
+    "start": "node bin/nano-banana.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}

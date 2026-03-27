@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Multi-Agent Memory Blueprint v1 (Public-Safe)</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Multi-Agent Memory Blueprint v1 (Public-Safe)</h1>
+</header>
+<h1 id="multi-agent-memory-blueprint-v1-public-safe">Multi-Agent Memory
+Blueprint v1 (Public-Safe)</h1>
+<h2 id="overview">Overview</h2>
+<p>This blueprint describes a scalable multi-agent memory architecture
+built around three layers:</p>
+<ul>
+<li><strong>OpenClaw</strong> for agent runtime, messaging, and
+sessions</li>
+<li><strong>Paperclip</strong> for organizational structure, governance,
+and task orchestration</li>
+<li><strong>Supermemory</strong> for layered memory and recall</li>
+</ul>
+<p>The goal is to support a growing multi-agent system with clean
+coordination, scoped memory access, project isolation, and long-term
+learning without letting shared memory become polluted.</p>
+<hr />
+<h2 id="core-design-goals">Core Design Goals</h2>
+<ul>
+<li>support many agents without coordination collapse</li>
+<li>keep shared memory clean and useful</li>
+<li>separate active project context from durable organizational
+knowledge</li>
+<li>preserve valuable lessons while wiping low-value residue</li>
+<li>allow orchestrator-led creation of new memory spaces over time</li>
+<li>support additive project memory instead of overriding agent
+memory</li>
+</ul>
+<hr />
+<h2 id="memory-hierarchy">Memory Hierarchy</h2>
+<h3 id="global-governance">0. Global Governance</h3>
+<p>System-wide rules, coordination laws, permanent standards, and
+governance policy.</p>
+<p><strong>Access</strong> - read: operatives and orchestrator only -
+write: orchestrator only</p>
+<p><strong>Examples</strong> - handoff protocol - escalation rules -
+memory promotion rules - permanent coordination standards</p>
+<p><strong>Example container</strong> - <code>gov_global</code></p>
+<h3 id="company-memory">1. Company Memory</h3>
+<p>Durable domain knowledge shared across multiple projects inside one
+company or specialization domain.</p>
+<p><strong>Examples</strong> - web stack standards - rendering pipeline
+conventions - preferred tools - reusable workflows - domain-specific
+methods</p>
+<p><strong>Example containers</strong> - <code>company_web</code> -
+<code>company_games</code></p>
+<h3 id="project-shared-memory">2. Project Shared Memory</h3>
+<p>Live collaboration memory for active projects.</p>
+<p><strong>Examples</strong> - blockers - decisions - active
+architecture choices - handoff status - project constraints - verified
+findings</p>
+<p><strong>Example containers</strong> -
+<code>project_supermemory_fork</code> -
+<code>project_games_prototype_alpha</code></p>
+<h3 id="restricted-shared-memory">3. Restricted Shared Memory</h3>
+<p>Shared memory for limited groups without exposing full company
+scope.</p>
+<p><strong>Examples</strong> - <code>restricted_billing</code> -
+<code>restricted_admin</code> - <code>restricted_render_ops</code></p>
+<h3 id="agent-private-memory">4. Agent Private Memory</h3>
+<p>Local durable working memory for an individual agent.</p>
+<p><strong>Examples</strong> - local heuristics - unfinished patterns -
+personal workflow preferences - non-shared useful notes</p>
+<p><strong>Example containers</strong> -
+<code>agent_orchestrator_private</code> -
+<code>agent_014_private</code></p>
+<h3 id="agent-experience">5. Agent Experience</h3>
+<p>Curated long-term specialization knowledge.</p>
+<p><strong>Storage form</strong> - markdown files, primarily
+<code>experience.md</code> style files</p>
+<p><strong>Examples</strong> - repeated bottlenecks - durable lessons -
+successful playbooks - known failure modes</p>
+<h3 id="user-memory">6. User Memory</h3>
+<p>User-specific persistent preferences and facts.</p>
+<p><strong>Example container</strong> - <code>user_&lt;id&gt;</code></p>
+<h3 id="session-memory">7. Session Memory</h3>
+<p>Active thread/session continuity.</p>
+<p><strong>Mechanism</strong> - <code>conversationId</code></p>
+<h3 id="ephemeral-context">8. Ephemeral Context</h3>
+<p>Temporary context that usually should not become durable memory.</p>
+<h3 id="cold-storage">9. Cold Storage</h3>
+<p>Archived completed project memory, isolated from normal agents.</p>
+<p><strong>Access</strong> - orchestrator - operators/managers on
+command</p>
+<p><strong>Not for routine agent recall.</strong></p>
+<p><strong>Example containers</strong> -
+<code>archive_project_supermemory_fork</code> -
+<code>archive_project_web_redesign</code></p>
+<hr />
+<h2 id="access-model">Access Model</h2>
+<h3 id="orchestrator">Orchestrator</h3>
+<p>Can: - create memory spaces - grant/revoke access - inspect private
+memory if needed - promote project learnings upward - archive finished
+projects - retrieve cold storage on command</p>
+<h3 id="operators-managers">Operators / Managers</h3>
+<p>Can: - access assigned company/project memories - access cold storage
+when authorized - help curate durable knowledge - read global governance
+if designated as operatives</p>
+<h3 id="agents">Agents</h3>
+<p>Can: - use private memory - use assigned project memory - use only
+explicitly granted company/restricted memory - not access cold storage
+by default - not create new shared memory spaces</p>
+<hr />
+<h2 id="write-policy">Write Policy</h2>
+<h3 id="direct-writes-allowed">Direct writes allowed</h3>
+<ul>
+<li>own private memory</li>
+<li>assigned project memory if useful and non-noisy</li>
+</ul>
+<h3 id="proposed-writes">Proposed writes</h3>
+<ul>
+<li>company memory</li>
+<li>restricted shared memory</li>
+</ul>
+<h3 id="orchestrator-only-writes">Orchestrator-only writes</h3>
+<ul>
+<li>governance memory</li>
+<li>creation of new company/project/restricted/cold-storage spaces</li>
+<li>archival metadata</li>
+</ul>
+<hr />
+<h2 id="promotion-flow">Promotion Flow</h2>
+<ul>
+<li>private -&gt; project -&gt; company -&gt; governance</li>
+</ul>
+<p>Promote upward only when value is proven and reusable.</p>
+<hr />
+<h2 id="project-completion-lifecycle">Project Completion Lifecycle</h2>
+<ol type="1">
+<li>Project completes.</li>
+<li>Distill bottlenecks, issues, and durable lessons.</li>
+<li>Write curated lessons into the specialized agent’s
+<code>experience.md</code>.</li>
+<li>Wipe most specialized agent project memory after completion.</li>
+<li>Archive project memory to cold storage.</li>
+<li>Revoke routine agent access to archived project memory.</li>
+<li>Carry only curated <code>experience.md</code> knowledge forward to
+future projects.</li>
+</ol>
+<hr />
+<h2 id="supermemory-metadata-schema">Supermemory Metadata Schema</h2>
+<p>Use metadata with every durable memory write.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;agent_id&quot;</span><span class="fu">:</span> <span class="st">&quot;agent_orchestrator&quot;</span><span class="fu">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;agent_name&quot;</span><span class="fu">:</span> <span class="st">&quot;Orchestrator&quot;</span><span class="fu">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;agent_kind&quot;</span><span class="fu">:</span> <span class="st">&quot;orchestrator&quot;</span><span class="fu">,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;company_id&quot;</span><span class="fu">:</span> <span class="st">&quot;company_web&quot;</span><span class="fu">,</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;project_id&quot;</span><span class="fu">:</span> <span class="st">&quot;project_supermemory_fork&quot;</span><span class="fu">,</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;memory_scope&quot;</span><span class="fu">:</span> <span class="st">&quot;project&quot;</span><span class="fu">,</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;visibility&quot;</span><span class="fu">:</span> <span class="st">&quot;shared&quot;</span><span class="fu">,</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;written_by&quot;</span><span class="fu">:</span> <span class="st">&quot;agent_orchestrator&quot;</span><span class="fu">,</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;source_session&quot;</span><span class="fu">:</span> <span class="st">&quot;session_example&quot;</span><span class="fu">,</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;channel&quot;</span><span class="fu">:</span> <span class="st">&quot;discord&quot;</span><span class="fu">,</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;confidence&quot;</span><span class="fu">:</span> <span class="fl">0.87</span><span class="fu">,</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;importance&quot;</span><span class="fu">:</span> <span class="st">&quot;high&quot;</span><span class="fu">,</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;retention&quot;</span><span class="fu">:</span> <span class="st">&quot;project_lifecycle&quot;</span><span class="fu">,</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;status&quot;</span><span class="fu">:</span> <span class="st">&quot;active&quot;</span><span class="fu">,</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;tags&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;architecture&quot;</span><span class="ot">,</span> <span class="st">&quot;memory-policy&quot;</span><span class="ot">,</span> <span class="st">&quot;handoff&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;approved_by&quot;</span><span class="fu">:</span> <span class="st">&quot;agent_orchestrator&quot;</span><span class="fu">,</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;promoted_from&quot;</span><span class="fu">:</span> <span class="st">&quot;agent_private&quot;</span><span class="fu">,</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;timestamp&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-03-24T03:15:00Z&quot;</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h3 id="suggested-enum-values">Suggested enum values</h3>
+<h4 id="memory_scope"><code>memory_scope</code></h4>
+<ul>
+<li><code>governance</code></li>
+<li><code>company</code></li>
+<li><code>project</code></li>
+<li><code>restricted_shared</code></li>
+<li><code>agent_private</code></li>
+<li><code>experience</code></li>
+<li><code>user</code></li>
+<li><code>session</code></li>
+<li><code>cold_storage</code></li>
+<li><code>ephemeral</code></li>
+</ul>
+<h4 id="visibility"><code>visibility</code></h4>
+<ul>
+<li><code>shared</code></li>
+<li><code>restricted</code></li>
+<li><code>private</code></li>
+<li><code>orchestrator_only</code></li>
+<li><code>operator_only</code></li>
+<li><code>manager_operator_only</code></li>
+</ul>
+<h4 id="retention"><code>retention</code></h4>
+<ul>
+<li><code>ephemeral</code></li>
+<li><code>short_term</code></li>
+<li><code>project_lifecycle</code></li>
+<li><code>persistent</code></li>
+<li><code>archival</code></li>
+</ul>
+<h4 id="status"><code>status</code></h4>
+<ul>
+<li><code>proposed</code></li>
+<li><code>approved</code></li>
+<li><code>active</code></li>
+<li><code>archived</code></li>
+<li><code>stale</code></li>
+<li><code>rejected</code></li>
+</ul>
+<hr />
+<h2 id="naming-conventions">Naming Conventions</h2>
+<ul>
+<li><code>gov_global</code></li>
+<li><code>company_web</code></li>
+<li><code>company_games</code></li>
+<li><code>project_supermemory_fork</code></li>
+<li><code>restricted_billing</code></li>
+<li><code>restricted_admin</code></li>
+<li><code>agent_orchestrator_private</code></li>
+<li><code>agent_001_private</code></li>
+<li><code>archive_project_supermemory_fork</code></li>
+<li><code>user_&lt;id&gt;</code></li>
+</ul>
+<p>Use <code>conversationId</code> for thread/session context.</p>
+<hr />
+<h2 id="suggested-file-tree">Suggested File Tree</h2>
+<pre class="text"><code>agents/
+  BLUEPRINT_PUBLIC.md
+  SHARED_PLAYBOOK.md
+  MEMORY_POLICY.md
+  ORCHESTRATOR.md
+
+  registry/
+    agents.json
+    companies.json
+    projects.json
+    memory_spaces.json
+
+  companies/
+    _template.company.md
+    web.md
+    games.md
+
+  projects/
+    _template.project.md
+    supermemory-fork.md
+
+  agent-profiles/
+    _template.agent.md
+    orchestrator.md
+
+  experience/
+    orchestrator.md
+    _template.experience.md</code></pre>
+<hr />
+<h2 id="template-ideas">Template Ideas</h2>
+<h3 id="company-template">Company Template</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode md"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Company: &lt;company_id&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## Mission</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">what</span> <span class="er">this</span> <span class="er">company</span> <span class="er">specializes</span> <span class="er">in</span><span class="dt">&gt;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">## Durable Knowledge</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>stack/tooling</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>standards</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>workflows</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>domain patterns</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="fu">## What Belongs In Company Memory</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>reusable methods</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>domain standards</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>stable tool preferences</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="fu">## What Stays Out</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>raw project chatter</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>private agent notes</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>one-off noise</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="fu">## Access</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>who can read</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>who can write</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>who can approve promotions</span></code></pre></div>
+<h3 id="project-template">Project Template</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode md"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Project: &lt;project_id&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## Objective</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">goal</span><span class="dt">&gt;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">## Company</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">company_id</span><span class="dt">&gt;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">## Assigned Agents</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="dt">&lt;</span><span class="kw">agent_ids</span><span class="dt">&gt;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="fu">## Allowed Memory</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>project shared memory</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>relevant company memory</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>agent private memory</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="fu">## Deliverables</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="dt">&lt;</span><span class="kw">deliverables</span><span class="dt">&gt;</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="fu">## Completion Rules</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>archive to cold storage</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>extract valuable lessons to specialist experience.md</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>wipe most specialized project memory after completion</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>revoke unnecessary access</span></code></pre></div>
+<h3 id="agent-profile-template">Agent Profile Template</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode md"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Agent Profile: &lt;agent_id&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## Name</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">display</span> <span class="er">name</span><span class="dt">&gt;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">## Mission</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">current</span> <span class="er">purpose</span><span class="dt">&gt;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">## Tone</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">tone</span><span class="dt">&gt;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="fu">## Permissions</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>tools:</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>memory reads:</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>memory writes:</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>escalation rights:</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="fu">## Memory Behavior</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>what to write</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>what to avoid</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>when to escalate instead of writing</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="fu">## Handoff Style</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">how</span> <span class="er">this</span> <span class="er">agent</span> <span class="er">communicates</span> <span class="er">state</span><span class="dt">&gt;</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="fu">## Constraints</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">what</span> <span class="er">this</span> <span class="er">agent</span> <span class="er">must</span> <span class="er">never</span> <span class="er">do</span><span class="dt">&gt;</span></span></code></pre></div>
+<h3 id="experience-template">Experience Template</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode md"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Experience: &lt;agent_id or specialization&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## Durable Lessons</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>lesson:</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  context:</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  signal:</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  action:</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">## Bottlenecks Seen Repeatedly</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="dt">&lt;</span><span class="kw">pattern</span><span class="dt">&gt;</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="fu">## What Works</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="dt">&lt;</span><span class="kw">best</span> <span class="er">practices</span><span class="dt">&gt;</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="fu">## What Fails</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="dt">&lt;</span><span class="kw">anti-patterns</span><span class="dt">&gt;</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="fu">## Promotion Candidates</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>lessons that may deserve company-level memory</span></code></pre></div>
+<hr />
+<h2 id="practical-stack-recommendation">Practical Stack
+Recommendation</h2>
+<ul>
+<li><strong>Paperclip</strong> = org/company/task/governance layer</li>
+<li><strong>Supermemory</strong> = layered memory and recall layer</li>
+<li><strong>OpenClaw</strong> = runtime/session/messaging layer</li>
+</ul>
+<p>This gives a clean separation of concerns instead of forcing one
+system to do everything.</p>
+<hr />
+<h2 id="recommended-build-order">Recommended Build Order</h2>
+<ol type="1">
+<li>create the file tree</li>
+<li>create templates</li>
+<li>create initial registries</li>
+<li>define first company (<code>company_web</code>)</li>
+<li>define first project (<code>project_supermemory_fork</code>)</li>
+<li>define orchestrator profile</li>
+<li>define memory write rules in <code>MEMORY_POLICY.md</code></li>
+<li>wire Supermemory naming and metadata conventions</li>
+<li>add more agents only after the foundation is stable</li>
+</ol>
+</body>
+</html>

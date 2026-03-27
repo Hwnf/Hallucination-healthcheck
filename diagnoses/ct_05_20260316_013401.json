@@ -1,0 +1,92 @@
+{
+  "trace_id": "ct_05",
+  "overall_verdict": "contradicted",
+  "observability_tier": 2,
+  "findings": [
+    {
+      "finding_id": "llm_contradiction_c1",
+      "category": "contradiction",
+      "verdict": "contradicted",
+      "finding_source": "semantic",
+      "severity": "high",
+      "turn_index": 0,
+      "claim_text": "Claim ID: c1",
+      "explanation": "Contradicted by 1 refs.",
+      "evidence_refs": [
+        {
+          "evidence_type": "tool_output",
+          "ref_id": "contra_0",
+          "turn_index": null,
+          "span_text": "Status: DOWN. Last healthy: 2 hours ago. Error: Connection refused on port 443.",
+          "content_hash": null
+        }
+      ],
+      "confidence": 1.0,
+      "semantic_call": "E"
+    }
+  ],
+  "skipped_checks": [
+    {
+      "check_name": "runtime_span_binding",
+      "reason": "No runtime spans available at Tier 2",
+      "would_require_tier": 0
+    },
+    {
+      "check_name": "artifact_hash_verification",
+      "reason": "No runtime artifact hashes at Tier 2",
+      "would_require_tier": 0
+    },
+    {
+      "check_name": "full_execution_proof",
+      "reason": "Partial runtime visibility at Tier 1",
+      "would_require_tier": 0
+    }
+  ],
+  "summary": {
+    "total_claims_extracted": 1,
+    "claims_verified": 0,
+    "claims_unsupported": 0,
+    "claims_contradicted": 1,
+    "claims_insufficient_evidence": 0,
+    "claims_unverifiable": 0,
+    "policy_violations": 0,
+    "deterministic_findings": 0,
+    "semantic_findings": 1
+  },
+  "checker_version": "1.0.0",
+  "policy_version": "1.0.0",
+  "trace_schema_version": "1.0.0",
+  "timestamp": "2026-03-16T01:34:01.447395",
+  "pipeline_mode": "inline_soft_gate",
+  "models_used": [],
+  "conversation_snapshot": {},
+  "detailed_findings": [
+    {
+      "claim_text": "Claim ID: c1",
+      "claim_type": "contradiction",
+      "turn_index": 0,
+      "source": "semantic",
+      "confidence": 1.0,
+      "evidence_snippets": [
+        {
+          "evidence_type": "tool_output",
+          "ref_id": "contra_0",
+          "span_text": "Status: DOWN. Last healthy: 2 hours ago. Error: Connection refused on port 443."
+        }
+      ],
+      "mismatch_summary": {
+        "agent_said": "Claim ID: c1",
+        "evidence": [
+          {
+            "evidence_type": "tool_output",
+            "ref_id": "contra_0",
+            "span_text": "Status: DOWN. Last healthy: 2 hours ago. Error: Connection refused on port 443."
+          }
+        ],
+        "verdict": "contradicted"
+      },
+      "recommended_action": "Review the claim and provide supporting evidence."
+    }
+  ],
+  "diagnosis_generated_at": "2026-03-16T01:34:01.447893"
+}

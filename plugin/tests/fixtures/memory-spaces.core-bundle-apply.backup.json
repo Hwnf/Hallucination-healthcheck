@@ -1,0 +1,125 @@
+[
+  {
+    "memory_id": "gov_global",
+    "scope": "governance",
+    "status": "active",
+    "owner": "agent_orchestrator",
+    "readers": [
+      "agent_orchestrator",
+      "operatives"
+    ],
+    "writers": [
+      "agent_orchestrator"
+    ],
+    "retention": "persistent",
+    "default_read_policy": "designated_operative_or_orchestrator",
+    "default_write_policy": "orchestrator_only",
+    "review_policy": "mandatory_review",
+    "promotion_policy": "orchestrator_only",
+    "archive_policy": "version_not_delete",
+    "retrieval_default": true,
+    "retrieval_rank": 7,
+    "immutable": false,
+    "supersession_mode": "link_not_delete",
+    "sensitivity": "restricted",
+    "schema_version": "2.0"
+  },
+  {
+    "memory_id": "company_web",
+    "scope": "company",
+    "status": "active",
+    "owner": "agent_orchestrator",
+    "readers": [
+      "agent_orchestrator"
+    ],
+    "writers": [
+      "agent_orchestrator"
+    ],
+    "retention": "persistent",
+    "default_read_policy": "company_assigned",
+    "default_write_policy": "proposal_or_orchestrator",
+    "review_policy": "standards_review_required",
+    "promotion_policy": "orchestrator_review",
+    "archive_policy": "supersede_or_archive",
+    "retrieval_default": true,
+    "retrieval_rank": 5,
+    "immutable": false,
+    "supersession_mode": "link_not_delete",
+    "sensitivity": "internal",
+    "schema_version": "2.0"
+  },
+  {
+    "memory_id": "company_games",
+    "scope": "company",
+    "status": "planned",
+    "owner": "agent_orchestrator",
+    "readers": [
+      "agent_orchestrator"
+    ],
+    "writers": [
+      "agent_orchestrator"
+    ],
+    "retention": "persistent",
+    "default_read_policy": "company_assigned",
+    "default_write_policy": "proposal_or_orchestrator",
+    "review_policy": "standards_review_required",
+    "promotion_policy": "orchestrator_review",
+    "archive_policy": "supersede_or_archive",
+    "retrieval_default": true,
+    "retrieval_rank": 5,
+    "immutable": false,
+    "supersession_mode": "link_not_delete",
+    "sensitivity": "internal",
+    "schema_version": "2.0"
+  },
+  {
+    "memory_id": "project_supermemory_fork",
+    "scope": "project",
+    "status": "archived",
+    "owner": "agent_orchestrator",
+    "readers": [
+      "agent_orchestrator"
+    ],
+    "writers": [
+      "agent_orchestrator"
+    ],
+    "retention": "project_lifecycle",
+    "default_read_policy": "project_assigned",
+    "default_write_policy": "project_assigned",
+    "review_policy": "major_decisions_review",
+    "promotion_policy": "orchestrator_review",
+    "archive_policy": "archive_on_close",
+    "retrieval_default": false,
+    "retrieval_rank": 3,
+    "immutable": false,
+    "supersession_mode": "link_not_delete",
+    "sensitivity": "internal",
+    "schema_version": "2.0"
+  },
+  {
+    "memory_id": "archive_project_supermemory_fork",
+    "scope": "cold_storage",
+    "status": "active",
+    "owner": "agent_orchestrator",
+    "readers": [
+      "agent_orchestrator",
+      "operators",
+      "managers"
+    ],
+    "writers": [
+      "agent_orchestrator"
+    ],
+    "retention": "archival",
+    "default_read_policy": "explicit_archive_authorization",
+    "default_write_policy": "closeout_process_only",
+    "review_policy": "manifest_correction_only",
+    "promotion_policy": "none",
+    "archive_policy": "immutable_archive",
+    "retrieval_default": false,
+    "retrieval_rank": 0,
+    "immutable": true,
+    "supersession_mode": "link_not_delete",
+    "sensitivity": "internal",
+    "schema_version": "2.0"
+  }
+]

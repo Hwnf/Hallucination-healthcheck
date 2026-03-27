@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "openclaw.plugin-manifest.v1",
+  "id": "blueprint-v2-memory-runtime",
+  "displayName": "Blueprint V2 Memory Runtime",
+  "version": "0.1.0",
+  "entry": "plugin/runtime/plugin-entry.ts",
+  "factory": "createHostPluginDescriptor",
+  "protocolVersion": "host-plugin.v1",
+  "capabilities": {
+    "supportedHooks": ["preTurn", "postTurn", "health"],
+    "responseEnvelopes": [
+      "HostPreTurnResponse",
+      "HostPostTurnResponse",
+      "HostHealthResponse",
+      "HostPreTurnChunkResponse"
+    ],
+    "features": [
+      "host-event-envelopes",
+      "host-response-envelopes",
+      "host-error-envelopes",
+      "paperclip-provenance",
+      "registry-health",
+      "chunked-preturn-response"
+    ]
+  }
+}
