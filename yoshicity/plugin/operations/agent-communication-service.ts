@@ -468,6 +468,34 @@ export class DefaultAgentCommunicationService implements AgentCommunicationServi
       },
     });
 
+    // Optional auto-ACK (off by default). Enable by setting AUTO_ACK_ENABLED='true' in the environment.
+    if (process.env.AUTO_ACK_ENABLED === 'true') {
+      try {
+        for (const recip of message.recipient_agent_ids) {
+          const ack: AgentCommunicationMessage = {
+            message_id: makeId('msg'),
+            thread_id: message.thread_id,
+            sender_agent_id: recip,
+            recipient_agent_ids: [senderAgentId],
+            message_type: 'ack',
+            body: `ACK: received ${new Date().toISOString()}`,
+            summary: null,
+            requires_response: false,
+            priority: 'normal',
+            created_at: new Date().toISOString(),
+            reply_to_message_id: message.message_id,
+            metadata: { auto_ack: true },
+            schema_version: '2.0',
+          };
+          messages.push(ack);
+        }
+        // persist the ack messages
+        await this.saveMessages(messages);
+      } catch (e) {
+        // non-fatal: continue without failing the send
+      }
+    }
+
     await this.syncMailboxV3Views(thread);
     return message;
   }
